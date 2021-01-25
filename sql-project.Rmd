@@ -1,6 +1,6 @@
 ---
 title: "sql-workshop"
-author: "Charles Lang"
+author: "Nicole Schlosberg"
 output: html_document
 ---
 
@@ -16,13 +16,14 @@ library(RMySQL)
 db_user <- 'admin'
 db_password <- 'testsql!'
 db_name <- 'oudb'
-db_host <- 'PASTE YOUR ENDPOINT HERE'
+db_host <- 'database-1.crvz7mmzxfyc.us-east-2.rds.amazonaws.com'
 db_port <- 3306
 
 mydb <- dbConnect(MySQL(), user = db_user, password = db_password, dbname = db_name, host = db_host, port = db_port)
 
 summary(mydb)
 ```
+
 
 ## Load OU Data
 ```{r}
@@ -34,6 +35,7 @@ studentAssessment <- read.csv("studentAssessment.csv", header = TRUE)
 courses <- read.csv("courses.csv", header = TRUE)
 studentRegistration <- read.csv("studentRegistration.csv", header = TRUE)
 ```
+
 
 ## Write data to the DB using the DBI package
 ```{r}
@@ -51,11 +53,30 @@ dbListTables(mydb)
 
 #Read a particular table
 dbReadTable(mydb, 'studentInfo')
-
+```
 #EXERCISE 1
 #Make two toy data sets with at least three variables and at least 30 rows each in them. Have a mix of numeric and character variables. Transfer these dataframes to your SQL database using the DBI commands. Name the tables whatever you like.
+```{r}
+#First toy data set
+d11 <- c("golden-retriever","poodle","mutt","doodle")
+d12 <- c("spotted","brown","white","red")
+dogdata <- data.frame(as.numeric(1:30),sample(d11,size=30,replace = TRUE),sample(d12,size=30, replace=TRUE))
+names(dogdata) <- c("id", "dog","color")
 
+#Second toy data set
+d21 <- c("sphynx","abyssinian","balinese","bengal")
+d22 <- c("spotted","brown","white","red")
+catdata <- data.frame(as.numeric(1:30),sample(d21,size=30,replace = TRUE),sample(d22,size=30, replace=TRUE))
+names(catdata) <- c("id", "cat","color")
+
+#Transfer both toy data sets to SQL database
+dbWriteTable(mydb, "dogdata", dogdata)
+dbWriteTable(mydb, "catdata", catdata)
+
+#List tables to see that table was added
+dbListTables(mydb)
 ```
+
 
 ## Getting into SQL - READING
 ```{r}
@@ -79,13 +100,17 @@ dbGetQuery(mydb, "SELECT COUNT(score) FROM studentAssessment WHERE score > 50;")
 
 #Using an AND statement
 dbGetQuery(mydb, "SELECT COUNT(*) FROM studentAssessment WHERE score > 50 AND id_assessment = '1752';")
-
+```
 #EXERCISE 2
+```{r}
 #Read one of your toy data tables, make sure the output is ordered in descending order, you rename one of the variables and the output is limited to the first 20 rows.
+dbGetQuery(mydb, "SELECT id , dog, color AS 'Dog Color' FROM dogdata ORDER BY id DESC LIMIT 20;")
 
 #Read the other table according to a condition of one of the variables.
-
+dbGetQuery(mydb, "SELECT * FROM catdata WHERE color = 'brown';")
+dbGetQuery(mydb, "SELECT id , cat, color FROM catdata WHERE color = 'brown';")
 ```
+
 
 ## Getting into SQL - UPDATING
 ```{r}
@@ -119,12 +144,25 @@ dbGetQuery(mydb, "UPDATE studentAssessment SET score = 'NULL' WHERE id_student =
 dbGetQuery(mydb, "DELETE FROM studentAssessment WHERE id_student = 1;")
 
 dbGetQuery(mydb, "SELECT * FROM studentAssessment ORDER BY id_student LIMIT 10;")
-
+```
 #EXERCISE 3
 #Insert a new row in one of your toy data tables leaving one variable empty. Change one value in your other table. Display your new tables. Delete the row you edited and the row you inserted. 
+```{r}
+#Insert a new row in one of your toy data tables leaving one variable empty.
+dbGetQuery(mydb, "INSERT INTO dogdata (id, dog) VALUES ('31', 'mutt');")
 
+#Change one value in your other table
+dbGetQuery(mydb, "UPDATE catdata SET color = 'pink' WHERE id = 30;")
 
+#Display your new tables
+dbGetQuery(mydb, "SELECT * FROM dogdata ORDER BY id DESC;")
+dbGetQuery(mydb, "SELECT * FROM catdata ORDER BY id DESC;")
+
+#Delete the row you edited and the row you inserted
+dbGetQuery(mydb, "DELETE FROM dogdata WHERE id = 31;")
+dbGetQuery(mydb, "DELETE FROM catdata WHERE id = 30;")
 ```
+
 
 ## Add/Deleting Table
 ```{r}
@@ -155,23 +193,53 @@ dbGetQuery(mydb, "SELECT * FROM test;") #This should produce an error since your
 
 #Delete a table if it exists
 dbGetQuery(mydb, "DROP TABLE IF EXISTS test;") #No error since it is only if it exists
-
+```
 #EXERCISE 4
 #Create a table that is exactly the same as your first toy data table but this time use SQL commands. Display your new table. Then delete the original table. 
+```{r}
+#Create a table that is exactly the same as your first toy data table but this time use SQL commands
+dbGetQuery(mydb,"CREATE TABLE dog (
+  id INTEGER, 
+  dog TEXT,
+  color TEXT
+  );")
 
+#only inserted the first 10 rows since the sample of dog breed and colors were all different in the original 30 rows. First ten match the first ten of the original toy dataframe
+dbGetQuery(mydb, "INSERT INTO dog VALUES ( 1, 'golden-retriever', 'white');")
+dbGetQuery(mydb, "INSERT INTO dog VALUES ( 2, 'doodle', 'brown' );")
+dbGetQuery(mydb, "INSERT INTO dog VALUES ( 3, 'mutt', 'red' );")
+dbGetQuery(mydb, "INSERT INTO dog VALUES ( 4, 'golden-retriever', 'white' );")
+dbGetQuery(mydb, "INSERT INTO dog VALUES ( 5, 'mutt', 'spotted' );")
+dbGetQuery(mydb, "INSERT INTO dog VALUES ( 6, 'doodle', 'red' );")
+dbGetQuery(mydb, "INSERT INTO dog VALUES ( 7, 'poodle', 'white' );")
+dbGetQuery(mydb, "INSERT INTO dog VALUES ( 8, 'golden-retriever', 'spotted' );")
+dbGetQuery(mydb, "INSERT INTO dog VALUES ( 9, 'mutt', 'red' );")
+dbGetQuery(mydb, "INSERT INTO dog VALUES ( 10, 'mutt', 'red' );")
+
+#Display your new table
+dbGetQuery(mydb, "SELECT * FROM dog;")
+
+#Delete the 'original' table (oridinal table is dogdata, left dog table)
+dbGetQuery(mydb, "DROP TABLE dogdata;")
+
+#Transferred the table back into the database because a later exercise needs it.
+dbWriteTable(mydb, "dogdata", dogdata) 
 ```
+
 
 # NULL Value
 ```{r}
 #NULL is a state (similar to R), represents the lack of a value. But is not compatible with R backend so this code doesn't work as part of dbGetQuery()
 
 #This doesn't work because NULL is not a value
-SELECT * FROM test WHERE score = NULL;
+#SELECT * FROM test WHERE score = NULL;
+dbGetQuery(mydb, "SELECT * FROM test WHERE score = NULL;")
 
 #Instead use
-SELECT * FROM test WHERE score is NULL;
-
+#SELECT * FROM test WHERE score is NULL;
+dbGetQuery(mydb, "SELECT * FROM test WHERE score is NULL;")
 ```
+
 
 # Constraints
 ```{r}
@@ -208,10 +276,28 @@ dbGetQuery(mydb,"INSERT INTO test2 (score, student) VALUES ('1', 'A');")
 #NULL is exempt
 dbGetQuery(mydb,"INSERT INTO test2 (score, student) VALUES (NULL, 'A');")
 dbGetQuery(mydb,"INSERT INTO test2 (score, student) VALUES (NULL, 'A');")
-
+```
 #EXERCISE 5
-#Recreate one of your toy data tables with the constraint that for one of the integer variablesthe default value will be zero. Test your table by inserting some empty values. Display your new tables. Then delete your table.  
+#Recreate one of your toy data tables with the constraint that for one of the integer variables the default value will be zero. Test your table by inserting some empty values. Display your new tables. Then delete your table.
+```{r}
+#Recreate one of your toy data tables with the constraint that for one of the integer variables the default value will be zero
+dbGetQuery(mydb,"CREATE TABLE cat (
+  id INTEGER DEFAULT 0, 
+  cat TEXT,
+  color TEXT
+  );")
 
+#Test your table by inserting some empty values
+dbGetQuery(mydb,"INSERT INTO cat (id, cat) VALUES ('1', 'abyssinian');")
+dbGetQuery(mydb,"INSERT INTO cat (cat,color) VALUES ('bengal','red');")
+dbGetQuery(mydb,"INSERT INTO cat (cat,color) VALUES ('bengal','spotted');")
+dbGetQuery(mydb,"INSERT INTO cat (id, color) VALUES ('4', 'brown');")
+
+#Display your new tables
+dbGetQuery(mydb, "SELECT * FROM cat;")
+
+#Then delete your table
+dbGetQuery(mydb, "DROP TABLE cat;")
 ```
 
 
@@ -224,9 +310,19 @@ dbGetQuery(mydb, "SELECT * FROM studentAssessment LIMIT 10;")
 
 #Delete a column
 dbGetQuery(mydb, "ALTER TABLE studentAssessment DROP COLUMN email;")
-
+dbGetQuery(mydb, "SELECT * FROM studentAssessment LIMIT 10;")
+```
 #EXERCISE 6
 #Add a column to one of your toy data tables with a default value of 3. Display your new table. Delete this column.
+```{r}
+#Add a column to one of your toy data tables with a default value of 3 
+dbGetQuery(mydb, "ALTER TABLE catdata ADD age INTEGER DEFAULT 3 ")
+
+#Display your new table 
+dbGetQuery(mydb, "SELECT * FROM catdata;")
+
+#Delete this column
+dbGetQuery(mydb, "ALTER TABLE catdata DROP COLUMN age;")
 ```
 
 
@@ -244,11 +340,27 @@ dbGetQuery(mydb,"INSERT INTO test3 (score, student) VALUES (5, 'B');")
 dbGetQuery(mydb, "SELECT * FROM test3;")
 
 dbGetQuery(mydb, "DROP TABLE IF EXISTS test3;")
-
+```
 #EXERCISE 7
 #Create a new table with four variables and a primary key that is a sequential id value.
+```{r}
+#Create a new table with four variables and a primary key that is a sequential id value
+dbGetQuery(mydb,"CREATE TABLE experiment (
+  participant_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+  participant_name TEXT,
+  score INTEGER,
+  results INTEGER 
+  );")
 
+#Testing
+dbGetQuery(mydb,"INSERT INTO experiment (participant_name, score, results) VALUES ('A', '3','3');")
+dbGetQuery(mydb,"INSERT INTO experiment (participant_name, score, results) VALUES ('B', '5','5');")
+dbGetQuery(mydb,"INSERT INTO experiment (participant_name, score, results) VALUES ('C', '1','1');")
+
+#Displaying
+dbGetQuery(mydb, "SELECT * FROM experiment;")
 ```
+
 
 ## Filtering (WHERE)
 ```{r}
@@ -274,22 +386,33 @@ dbGetQuery(mydb, "SELECT id_student, gender, region FROM studentInfo WHERE regio
 
 #IN
 dbGetQuery(mydb, "SELECT id_student, gender, region FROM studentInfo WHERE region IN ('Wales','Ireland');")
-
+```
 #EXERCISE 8
 #Query one of your original toy data tables, for two different conditions. 
+```{r}
+#Condition 1: cat variable has a 'b' as the second letter
+#Condition 2: color is in/is brown
 
+dbGetQuery(mydb, "SELECT * FROM catdata WHERE cat LIKE '_b%' AND color IN ('brown');")
 ```
+
 
 ## Removing Duplicates
 ```{r}
 dbGetQuery(mydb, "SELECT DISTINCT region FROM studentInfo;")
 
 dbGetQuery(mydb, "SELECT DISTINCT region, gender FROM studentInfo;")
-
+```
 #EXERCISE 9
 #Insert a duplicate row into one of your toy data tables. Then query the table without including duplicates.
+```{r}
+#Insert a duplicate row into one of your toy data tables
+dbGetQuery(mydb, "INSERT INTO catdata (cat, color) VALUES ('bengal', 'red');")
 
+#Then query the table without including duplicates
+dbGetQuery(mydb, "SELECT DISTINCT cat, color FROM catdata;")
 ```
+
 
 ## Conditional Expressions (non-standard)
 ```{r}
@@ -308,9 +431,9 @@ dbGetQuery(mydb,"SELECT
   FROM booltest")
 ```
 
-#Relationships (JOIN) - *Slide*
-```{r}
 
+## Relationships (JOIN) - *Slide*
+```{r}
 #Create two tables with matches and join them
 
 dbGetQuery(mydb, "CREATE TABLE left_table (id INTEGER, description TEXT);")
@@ -355,27 +478,46 @@ dbGetQuery(mydb,"SELECT l.description AS left_table, r.description AS right_tabl
 dbGetQuery(mydb, "SELECT * FROM left_table
            UNION
            SELECT * FROM right_table;")
-
-
-#EXERCISE 10
-# Create a common id variable in your two toy data tables. Then join those tables so that your query returns all the values from one table and only those that match from the other. 
-
 ```
+#EXERCISE 10
+# Create a common id variable in your two toy data tables. Then join those tables so that your query returns all the values from one table and only those that match from the other.
+```{r}
+#Create a common id variable in your two toy data tables
+dbGetQuery(mydb, "ALTER TABLE dogdata ADD owner TEXT ")
+dbGetQuery(mydb, "ALTER TABLE catdata ADD owner TEXT ")
+
+dbGetQuery(mydb, "UPDATE dogdata SET owner = 'Rebecca' WHERE dog = 'poodle';")
+dbGetQuery(mydb, "UPDATE dogdata SET owner = 'Jake' WHERE dog = 'mutt';")
+dbGetQuery(mydb, "UPDATE dogdata SET owner = 'Joe' WHERE dog = 'doodle';")
+dbGetQuery(mydb, "UPDATE dogdata SET owner = 'Anna' WHERE dog = 'golden-retriever';")
+
+dbGetQuery(mydb, "UPDATE catdata SET owner = 'Jake' WHERE color = 'white';")
+dbGetQuery(mydb, "UPDATE catdata SET owner = 'Laura' WHERE color = 'brown';")
+dbGetQuery(mydb, "UPDATE catdata SET owner = 'Jamie' WHERE color = 'red';")
+dbGetQuery(mydb, "UPDATE catdata SET owner = 'Talia' WHERE color = 'spotted';")
+
+#Then join those tables so that your query returns all the values from one table and only those that match from the other 
+dbGetQuery(mydb, "SELECT id, dog AS animal, color, owner FROM dogdata
+           UNION
+           SELECT id, cat AS animal, color, owner FROM catdata WHERE owner='Jake';")
+```
+
+
+## Finishing Up
 ```{r}
 #Now disconnect from your database
 dbDisconnect(mydb)
 
-#Then retunr to your AWS console and:
+#Then return to your AWS console and:
 
 #1. Click on "Actions" and then "Stop"
 #2. Do NOT make a snapshot
 #3 Click on "Actions" again and click "Delete"
 #4. Unclick "Make a final snapshot"
-#5. Clicl "I acknowledge that upon instance deletion, automated backups, including system snapshots and point-in-time recovery, will no longer be available."
+#5. Click "I acknowledge that upon instance deletion, automated backups, including system snapshots and point-in-time recovery, will no longer be available."
 #6. Type "delete me" into the field
 
 #Failure to follow these steps could result in charges to your credit card.
-
-
 ```
+
 
