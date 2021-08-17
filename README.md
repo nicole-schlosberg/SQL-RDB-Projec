@@ -32,15 +32,9 @@ In this unit you will learn the basic ideas behind relational databases and SQL.
 
 ## Project: AWS Database and SQL
 
-Please *fork* and *clone* this repository to your computer. If you are unfamiliar with this process you must sign up for office hours.
+Created an AWS account.
 
-Then you will need to create an account with AWS. This will require a credit card although we will only be using free services. If you already have an Amazpon account you can use that account.
-
-Please create the account through the regional website for your location.
-
-Once you have created an account follow the directions below, these steps are also shown in the video above.
-
-## Step by Step to Create MySQL Instance on Amazon Web Services
+## Created an AWS account with this Step by Step
 
 * Log into your [AWS Management Console](https://console.aws.amazon.com)
 * Locate `RDS` under the `Databases` heading
@@ -56,22 +50,12 @@ Once you have created an account follow the directions below, these steps are al
 * Uncheck `Automatic backups`
 * Click `Create database`
 * Once the database is created, take a screenshot and add it to your repository
-
-## Modify Security Group
-
-* Under `Security Groups` click `Inbound` and then `Edit`
-* Add the rule `SQL/Aurora` on `Port 3306` with the `Connection` of `MyIP`
+* Modify Security Group
+*Under `Security Groups` click `Inbound` and then `Edit`
+*Add the rule `SQL/Aurora` on `Port 3306` with the `Connection` of `MyIP`
 
 ## RStudio
 
-* Open the sql-project.Rmd file in RStudio and follow the directions.
-
-## Submission
-
-* Once you have completed the project please commit and pull request the repository back to the main branch. Please be sure to include your Rmd file and your screenshot of the AWS console page. The due date for this project is **January 27 by 5:00pm EDT**. Don't forget to delete your AWS database so you don't get charged any money!
-
-## Knowledge Check
-
-[After you submit please complete the knowledge check quiz located here](https://tccolumbia.qualtrics.com/jfe/form/SV_2i3mluBkpyjW0Um)
+* sql-project.Rmd - connected the Rmd to AWS MySQL Database and practiced SQL commands.
 
 
