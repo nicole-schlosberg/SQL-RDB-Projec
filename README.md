@@ -13,7 +13,7 @@ In this unit you will learn the basic ideas behind relational databases and SQL.
 
 ## Project: AWS Database and SQL
 
-# Created an AWS account with this Step by Step
+### Created an AWS account with this Step by Step
 * Log into your [AWS Management Console](https://console.aws.amazon.com)
 * Locate `RDS` under the `Databases` heading
 * Within Amazon RDS click `Create database`
@@ -29,11 +29,11 @@ In this unit you will learn the basic ideas behind relational databases and SQL.
 * Click `Create database`
 * Once the database is created, take a screenshot and add it to your repository
 
-# Modify Security Group
+### Modify Security Group
 * Under `Security Groups` click `Inbound` and then `Edit`
 * Add the rule `SQL/Aurora` on `Port 3306` with the `Connection` of `MyIP`
 
-# RStudio
+### RStudio
 * sql-project.Rmd - connected the Rmd to AWS MySQL Database and practiced SQL commands.
 
 ## Resources
