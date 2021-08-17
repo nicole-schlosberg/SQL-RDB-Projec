@@ -11,6 +11,31 @@ In this unit you will learn the basic ideas behind relational databases and SQL.
 * Be able to connect to the database through RStudio/R using the DBI package
 * Be able to run basic SQL commands in RStudio using the RMySQL package
 
+## Project: AWS Database and SQL
+
+# Created an AWS account with this Step by Step
+* Log into your [AWS Management Console](https://console.aws.amazon.com)
+* Locate `RDS` under the `Databases` heading
+* Within Amazon RDS click `Create database`
+* Under `Choose a database creation method` click `Standard Create`
+* Under `Engine options` choose `MySQL`
+* Under `Templates` choose `Free tier`
+* Under `Settings` name your `DB instance identifier` as `database-1`
+* Under `Credential settings` create a username and password combination and write it down (you will need it later)
+* Under `Connectivity` expand `Additional connectivity configuration` to show additional menu items and make sure that `Publicly accessible` is checked `Yes`
+* Expand the `Additional configuration` menu
+* Under `Initial database name` write `oudb`
+* Uncheck `Automatic backups`
+* Click `Create database`
+* Once the database is created, take a screenshot and add it to your repository
+
+# Modify Security Group
+* Under `Security Groups` click `Inbound` and then `Edit`
+* Add the rule `SQL/Aurora` on `Port 3306` with the `Connection` of `MyIP`
+
+# RStudio
+* sql-project.Rmd - connected the Rmd to AWS MySQL Database and practiced SQL commands.
+
 ## Resources
 
 ### Video 1
@@ -29,33 +54,3 @@ In this unit you will learn the basic ideas behind relational databases and SQL.
 
 [AWS](https://aws.amazon.com/)  
 [AWS China](https://www.amazonaws.cn/?nc1=f_ls)
-
-## Project: AWS Database and SQL
-
-Created an AWS account.
-
-## Created an AWS account with this Step by Step
-
-* Log into your [AWS Management Console](https://console.aws.amazon.com)
-* Locate `RDS` under the `Databases` heading
-* Within Amazon RDS click `Create database`
-* Under `Choose a database creation method` click `Standard Create`
-* Under `Engine options` choose `MySQL`
-* Under `Templates` choose `Free tier`
-* Under `Settings` name your `DB instance identifier` as `database-1`
-* Under `Credential settings` create a username and password combination and write it down (you will need it later)
-* Under `Connectivity` expand `Additional connectivity configuration` to show additional menu items and make sure that `Publicly accessible` is checked `Yes`
-* Expand the `Additional configuration` menu
-* Under `Initial database name` write `oudb`
-* Uncheck `Automatic backups`
-* Click `Create database`
-* Once the database is created, take a screenshot and add it to your repository
-* Modify Security Group
-*Under `Security Groups` click `Inbound` and then `Edit`
-*Add the rule `SQL/Aurora` on `Port 3306` with the `Connection` of `MyIP`
-
-## RStudio
-
-* sql-project.Rmd - connected the Rmd to AWS MySQL Database and practiced SQL commands.
-
-
