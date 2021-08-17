@@ -13,7 +13,7 @@ In this unit you will learn the basic ideas behind relational databases and SQL.
 
 ## Project: AWS Database and SQL
 
-### Created an AWS account with this Step by Step
+### Step by Step to setup AWS Account
 * Log into your [AWS Management Console](https://console.aws.amazon.com)
 * Locate `RDS` under the `Databases` heading
 * Within Amazon RDS click `Create database`
@@ -36,7 +36,7 @@ In this unit you will learn the basic ideas behind relational databases and SQL.
 ### RStudio
 * sql-project.Rmd - connected the Rmd to AWS MySQL Database and practiced SQL commands.
 
-## Resources
+## Utilized the following resources
 
 ### Video 1
 [![Introduction to Relational Databases & SQL](https://img.youtube.com/vi/G-rXRbdE7ow/0.jpg)](https://youtu.be/G-rXRbdE7ow)
@@ -53,4 +53,5 @@ In this unit you will learn the basic ideas behind relational databases and SQL.
 [Overview of Amazon Web Services](https://docs.aws.amazon.com/whitepapers/latest/aws-overview/introduction.html)
 
 [AWS](https://aws.amazon.com/)  
+
 [AWS China](https://www.amazonaws.cn/?nc1=f_ls)
