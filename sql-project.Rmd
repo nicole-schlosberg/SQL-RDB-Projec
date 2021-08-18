@@ -4,8 +4,6 @@ author: "Nicole Schlosberg"
 output: html_document
 ---
 
-Before you follow the directions below, please take a screenshot of your AWS console showing the running database and upload it to your repo.
-
 ## Connect to AWS MySQL Database
 ```{r}
 #install.packages("DBI", "RMySQL")
@@ -54,6 +52,8 @@ dbListTables(mydb)
 #Read a particular table
 dbReadTable(mydb, 'studentInfo')
 ```
+
+
 #EXERCISE 1
 #Make two toy data sets with at least three variables and at least 30 rows each in them. Have a mix of numeric and character variables. Transfer these dataframes to your SQL database using the DBI commands. Name the tables whatever you like.
 ```{r}
@@ -194,6 +194,8 @@ dbGetQuery(mydb, "SELECT * FROM test;") #This should produce an error since your
 #Delete a table if it exists
 dbGetQuery(mydb, "DROP TABLE IF EXISTS test;") #No error since it is only if it exists
 ```
+
+
 #EXERCISE 4
 #Create a table that is exactly the same as your first toy data table but this time use SQL commands. Display your new table. Then delete the original table. 
 ```{r}
@@ -479,6 +481,8 @@ dbGetQuery(mydb, "SELECT * FROM left_table
            UNION
            SELECT * FROM right_table;")
 ```
+
+
 #EXERCISE 10
 # Create a common id variable in your two toy data tables. Then join those tables so that your query returns all the values from one table and only those that match from the other.
 ```{r}
@@ -517,7 +521,7 @@ dbDisconnect(mydb)
 #5. Click "I acknowledge that upon instance deletion, automated backups, including system snapshots and point-in-time recovery, will no longer be available."
 #6. Type "delete me" into the field
 
-#Failure to follow these steps could result in charges to your credit card.
+#Failure to follow these steps results in charges to credit card.
 ```
 
 
